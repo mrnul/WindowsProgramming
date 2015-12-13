@@ -25,7 +25,11 @@ bool Icon::Destroy()
 {
 	if (!Handle)
 		return true;
-	return (DestroyIcon((HICON)Handle) != 0);
+	if (!DestroyIcon((HICON)Handle))
+		return false;
+		
+	Handle = 0;
+	return true;
 }
 
 Icon::~Icon()
