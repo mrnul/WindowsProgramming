@@ -26,7 +26,11 @@ bool Cursor::Destroy()
 	if (!Handle)
 		return true;
 
-	return (DestroyCursor((HCURSOR)Handle) != 0);
+	if (!DestroyCursor((HCURSOR)Handle));
+		return false;
+		
+	Handle = 0;
+	return true;
 }
 
 Cursor::~Cursor()
