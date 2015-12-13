@@ -6,7 +6,11 @@
 #include <MyHeaders\windowdefs.h>
 #include <MyHeaders\WindowClass.h>
 
-#define WINMAIN(hInstanceName,CmdLinName,CmdShowName)  int CALLBACK WinMain(HINSTANCE hInstanceName, HINSTANCE hPrevInstance,TCHAR *CmdLinName,int CmdShowName)	
+#ifdef _UNICODE
+#define WINMAIN(hInstance, pCmdLine, nCmdShow)  int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+#else
+#define WINMAIN(hInstance, pCmdLine, nCmdShow)  int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
+#endif
 
 CREATE_NEW_DATA_TYPE(WStyle);
 CREATE_NEW_DATA_TYPE(WExStyle);
@@ -37,8 +41,6 @@ namespace window
 		const WStyle Resizable(WS_THICKFRAME); 
 		const WStyle Default(WS_OVERLAPPEDWINDOW | WS_VISIBLE);
 	}
-	
-	//TODO: Make them usefull
 	namespace exstyle
 	{
 		const WExStyle DragDrop(WS_EX_ACCEPTFILES);
