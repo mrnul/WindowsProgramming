@@ -96,8 +96,10 @@ bool Window::Destroy()
 {
 	if (!Handle)
 		return true;
-	if (DestroyWindow(Handle))
-		return (Handle = 0) != 0;
+	if (!DestroyWindow(Handle))
+		return false;
+		
+	Handle = 0;
 	return false;;
 }
 
