@@ -1,6 +1,4 @@
 #include <MyHeaders\WindowClass.h>
-#include <MyHeaders\Icon.h>
-#include <MyHeaders\Cursor.h>
 
 WINPROC(BasicProc, handle, msg, wp, lp)
 {
