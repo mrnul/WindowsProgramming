@@ -75,7 +75,7 @@ class WindowClass
 			const WCColor color = windowclass::color::Default);
 
 		bool Unregister();
-		const WNDCLASSEX GetClass() const;
-		operator bool() const;
+		const WNDCLASSEX GetClass();
+		operator bool();
 		~WindowClass();
 };

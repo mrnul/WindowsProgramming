@@ -98,9 +98,9 @@ bool Window::Destroy()
 		return true;
 	if (!DestroyWindow(Handle))
 		return false;
-		
+
 	Handle = 0;
-	return false;;
+	return true;;
 }
 
 bool Window::IsVisible()
@@ -153,11 +153,6 @@ void Window::getClientRect(RECT *out)
 bool Window::Update()
 {
 	return UpdateWindow(Handle) != 0;
-}
-
-bool Window::Show(const int mode)
-{
-	return ShowWindow(Handle, mode) != 0;
 }
 
 bool Window::Create(const TCHAR *classname, const TCHAR *windowname, 

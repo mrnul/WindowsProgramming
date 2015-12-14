@@ -17,12 +17,12 @@ WindowClass::WindowClass()
 	Registered = false;
 }
 
-const WNDCLASSEX WindowClass::GetClass() const
+const WNDCLASSEX WindowClass::GetClass()
 {
 	return WinClass;
 }
 
-WindowClass::operator bool() const
+WindowClass::operator bool()
 {
 	return Registered;
 }

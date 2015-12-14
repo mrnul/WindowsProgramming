@@ -16,7 +16,7 @@ bool Icon::Load(const HINSTANCE hInstance, const TCHAR *path, const IMode mode, 
 	return (Handle = LoadImage(hInstance, path, IMAGE_ICON, desiredX, desiredY, mode | IMode(LR_LOADFROMFILE))) != 0;
 }
 
-Icon::operator HICON() const
+Icon::operator HICON()
 {
 	return (HICON)Handle;
 }
@@ -27,9 +27,9 @@ bool Icon::Destroy()
 		return true;
 	if (!DestroyIcon((HICON)Handle))
 		return false;
-		
+
 	Handle = 0;
-	return true;
+	return true;;
 }
 
 Icon::~Icon()

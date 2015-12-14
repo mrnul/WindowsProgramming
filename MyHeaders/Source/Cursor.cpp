@@ -16,7 +16,7 @@ bool Cursor::Load(const TCHAR *path, const CMode mode, int desiredX, int desired
 	return (Handle = LoadImage(0, path, IMAGE_CURSOR, desiredX, desiredY, mode | CMode(LR_LOADFROMFILE))) != 0;
 }
 
-Cursor::operator HCURSOR() const
+Cursor::operator HCURSOR()
 {
 	return (HCURSOR)Handle;
 }
@@ -26,11 +26,11 @@ bool Cursor::Destroy()
 	if (!Handle)
 		return true;
 
-	if (!DestroyCursor((HCURSOR)Handle));
+	if (!DestroyCursor((HCURSOR)Handle))
 		return false;
-		
+
 	Handle = 0;
-	return true;
+	return true;;
 }
 
 Cursor::~Cursor()

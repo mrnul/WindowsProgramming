@@ -34,7 +34,7 @@ class Cursor
 		Cursor();
 		Cursor(const TCHAR *path, const CMode mode = cursor::mode::Default, int desiredX = 0, int desiredY = 0);
 		bool Load(const TCHAR *path, const CMode mode = cursor::mode::Default, int desiredX = 0, int desiredY = 0);
-		operator HCURSOR() const;
+		operator HCURSOR();
 		bool Destroy();
 		~Cursor();
 };

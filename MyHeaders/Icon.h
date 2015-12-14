@@ -37,7 +37,7 @@ class Icon
 		Icon();
 		Icon(const HINSTANCE hInstance, const TCHAR *path, const IMode mode = icon::mode::Default, int desiredX = 0, int desiredY = 0);
 		bool Load(const HINSTANCE hInstance, const TCHAR *path, const IMode mode = icon::mode::Default, int desiredX = 0, int desiredY = 0);
-		operator HICON() const;
+		operator HICON();
 		bool Destroy();
 		~Icon();
 };

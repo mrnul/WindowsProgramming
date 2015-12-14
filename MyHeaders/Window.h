@@ -97,7 +97,6 @@ class Window
 			const int x = window::position::Default, const int y = window::position::Default, 
 			const int width = window::position::Default, const int height = window::position::Default);
 
-		bool Show(const int mode);
 		void getWindowRect(RECT *out);
 		bool SetOpacity(BYTE value);
 		void getClientRect(RECT *out);
