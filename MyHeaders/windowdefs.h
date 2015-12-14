@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 #define CREATE_NEW_DATA_TYPE(name)	struct name									\
-					{																\
+					{										\
 						unsigned int val;							\
 						explicit name(unsigned int v) : val(v)	{ }				\
 						operator unsigned int() const		{ return val; }			\
