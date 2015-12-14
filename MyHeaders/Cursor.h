@@ -32,8 +32,8 @@ class Cursor
 		HANDLE Handle;
 	public:
 		Cursor();
-		Cursor(const TCHAR *path, const CMode mode = cursor::mode::Default, int desiredX = 0, int desiredY = 0);
-		bool Load(const TCHAR *path, const CMode mode = cursor::mode::Default, int desiredX = 0, int desiredY = 0);
+		Cursor(const HINSTANCE hInstance, const TCHAR *path, const CMode mode = cursor::mode::Default, int desiredX = 0, int desiredY = 0);
+		bool Load(const HINSTANCE hInstance, const TCHAR *path, const CMode mode = cursor::mode::Default, int desiredX = 0, int desiredY = 0);
 		operator HCURSOR();
 		bool Destroy();
 		~Cursor();
