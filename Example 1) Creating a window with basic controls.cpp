@@ -16,13 +16,13 @@ WINMAIN(hin, cmd, show)
 	EditBox eb("Hey! Edit box here.", 90001, win, 10, 50, 160, 30);
 	StaticBox sb("Hey! Static box here.", 90002, win, 10, 90, 160, 30, staticbox::style::Default | staticbox::style::Border1);
 	CheckBox cb("Hey! check box here.", 90003, win, 10, 130, 160, 30);
-	ListBox lb("", 90005, win, 10, 170, 160, 80);
+	ListBox lb("", 90004, win, 10, 170, 160, 80);
 	lb.AddString("Item 1");
 	lb.AddString("Item 2");
 	lb.AddString("Item 3");
 
 	//static box with an icon
-	StaticBox sbIcon("", 90004, win, 10, 240, 160, 30, staticbox::style::Icon | staticbox::style::Default | staticbox::style::Border1);
+	StaticBox sbIcon("", 90005, win, 10, 240, 160, 30, staticbox::style::Icon | staticbox::style::Default | staticbox::style::Border1);
 	sbIcon.SetIcon(icon::OEMicon::Shield);
 
 	
