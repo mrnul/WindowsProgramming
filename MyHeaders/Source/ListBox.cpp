@@ -19,7 +19,7 @@ ListBox::operator HWND()
 
 bool ListBox::Create(const TCHAR *title, const DWORD ID, const HWND parent, const int x, const int y, const int width, const int height, const LBStyle style, const DWORD exstyle)
 {
-	return (Handle = CreateWindowEx(exstyle, TEXT("listbox"), title, style.operator unsigned int() | WS_CHILD | WS_VISIBLE, x, y, width, height, parent, (HMENU)ID, GetModuleHandle(0), 0)) != 0;
+	return (Handle = CreateWindowEx(exstyle, TEXT("listbox"), title, style.operator unsigned int() | WS_CHILD, x, y, width, height, parent, (HMENU)ID, GetModuleHandle(0), 0)) != 0;
 }
 
 int ListBox::AddString(const TCHAR *str)
