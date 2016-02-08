@@ -5,13 +5,13 @@ StaticBox::StaticBox()
 	Handle = 0;
 }
 
-StaticBox::StaticBox(const TCHAR *title, const DWORD ID, const HWND parent, const int x, const int y, const int width, const int height, const SBStye style, const SBExStye exstyle)
+StaticBox::StaticBox(const TCHAR *title, const DWORD ID, const HWND parent, const int x, const int y, const int width, const int height, const SBStyle style, const SBExStyle exstyle)
 {
 	Handle = 0;
 	Create(title, ID, parent, x, y, width, height, style, exstyle);
 }
 
-bool StaticBox::Create(const TCHAR *title, const DWORD ID, const HWND parent, const int x, const int y, const int width, const int height, const SBStye style, const SBExStye exstyle)
+bool StaticBox::Create(const TCHAR *title, const DWORD ID, const HWND parent, const int x, const int y, const int width, const int height, const SBStyle style, const SBExStyle exstyle)
 {
 	return (Handle = CreateWindowEx(exstyle, TEXT("STATIC"), title, style.operator unsigned int() | WS_CHILD, x, y, width, height, parent, (HMENU)ID, GetModuleHandle(0), 0)) != 0;
 }
