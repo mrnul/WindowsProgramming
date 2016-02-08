@@ -39,13 +39,13 @@ int main()
 	if (!buffer.Alloc(BUFF_SIZE))
 		return -3;
 
-	int size = 0;
-	int totalSizeRecved = 0;
-
 	cout << "Waiting for response..." << endl;
 	//wait a maximum of 2 seconds for the response
 	if (!socket.CheckReadability(2))
 		return -4;
+	
+	int size = 0;
+	int totalSizeRecved = 0;
 
 	cout << "Getting data!" << endl;
 	//we got the response in time, start recieving the data
