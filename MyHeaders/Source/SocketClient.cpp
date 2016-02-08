@@ -171,8 +171,7 @@ bool SocketClient::Clean()
 {
 	if (WinsockInitialized())
 	{
-		if (WSACleanup() == 0)
-			return true;
+		return WSACleanup() == 0;
 	}
 
 	return false;
