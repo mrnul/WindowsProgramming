@@ -12,15 +12,15 @@ namespace heap
 //-------------------------simple heap functions--------------------------------------------
 
 template<class TYPE>
-TYPE* halloc(const SIZE_T elCount)
+TYPE* halloc(const SIZE_T elCount, const bool zeroMem = true)
 {
-	return (TYPE*)HeapAlloc(heap::CurrentProcessHeap, 0, elCount*sizeof(TYPE));
+	return (TYPE*)HeapAlloc(heap::CurrentProcessHeap, HEAP_ZERO_MEMORY*zeroMem, elCount*sizeof(TYPE));
 }
 
 template<class TYPE>
-TYPE* hrealloc(const TYPE* pointer, const SIZE_T newElCount)
+TYPE* hrealloc(const TYPE* pointer, const SIZE_T newElCount, const bool zeroMem = true)
 {
-	return (TYPE*)HeapReAlloc(heap::CurrentProcessHeap, 0, pointer, newElCount*sizeof(TYPE));
+	return (TYPE*)HeapReAlloc(heap::CurrentProcessHeap, HEAP_ZERO_MEMORY*zeroMem, pointer, newElCount*sizeof(TYPE));
 }
 
 template <class TYPE>
@@ -37,7 +37,7 @@ bool hfree(TYPE &pointer)
 template<class TYPE>
 bool AllocAndCopy(TYPE *&dest, const TYPE *source, const SIZE_T elCount)
 {
-	if (!(dest = halloc<TYPE>(elCount)))
+	if (!(dest = halloc<TYPE>(elCount, false)))
 		return false;
 	memcpy(dest, source, elCount*sizeof(TYPE));
 	return true;

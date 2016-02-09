@@ -59,7 +59,7 @@ class SocketClient
 		bool ShutDownSnd();
 		unsigned int GetPendingDataSize();
 		operator SOCKET();
-		void Close();
+		bool Close();
 		bool Clean();
 		~SocketClient();
 };

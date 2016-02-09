@@ -12,7 +12,7 @@ using std::cin;
 int main()
 {
 	//initialize Winsock, version 2.2
-	//we need a more decent way to do that
+	//we need a more decent way to do that (?)
 	SocketClient socket(2, 2);
 
 	//port 80 is for http
@@ -56,14 +56,12 @@ int main()
 		cout << totalSizeRecved << endl;
 	}
 
+	//no need to do that here, just a demo
 	out.Flush();
 	socket.Close();
 
-	//socket.Clean();
-	//while(socket.Clean());
-	//we need a more decent way to initialize and cleanup Winsock
-	//now just call WSACleanup
-	WSACleanup();
+	//we need a more decent way to initialize and cleanup Winsock (?)
+	socket.Clean();
 
 	if (size < 0)
 		cout << "**An error occured**" << endl;

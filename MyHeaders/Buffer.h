@@ -3,6 +3,7 @@
 #define MyHeaders_Buffer
 
 #include <Windows.h>
+#include <MyHeaders\Heap.h>
 
 template<class TYPE>
 class Buffer
@@ -63,19 +64,21 @@ bool Buffer<TYPE>::AllocAndCopy(const TYPE *source, const unsigned int elements)
 template<class TYPE>
 bool Buffer<TYPE>::Alloc(const unsigned int elementsCount)
 {
-	return (Pointer = (TYPE*)HeapAlloc(heap::CurrentProcessHeap, HEAP_ZERO_MEMORY, (Elements = elementsCount)*sizeof(TYPE))) != 0;
+	Elements = elementsCount;
+	Pointer = halloc<TYPE>(Elements);
+	return Pointer != 0;
 }
 
 template<class TYPE>
-bool Buffer<TYPE>::Realloc(const unsigned int elementsCount)
+bool Buffer<TYPE>::Realloc(const unsigned int newElementsCount)
 {
-	void *tmpPointer;
-	if (tmpPointer = HeapReAlloc(heap::CurrentProcessHeap, 0, Pointer, elementsCount*sizeof(TYPE)))
-	{
-		Pointer = (TYPE*)tmpPointer;
-		Elements = elementsCount;
-	}
-	return (tmpPointer == Pointer);
+	TYPE *tmp = hrealloc<TYPE>(Pointer, newElementsCount);
+	if (!tmp)
+		return false;
+
+	Elements = newElementsCount;
+	Pointer = tmp;
+	return true;
 }
 
 

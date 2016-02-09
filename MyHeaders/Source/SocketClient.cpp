@@ -43,20 +43,13 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port)
 {
 	ADDRINFOT *res;
 	ADDRINFOT *ptr;
-	ADDRINFOT hints;
-
-	memset(&hints, 0, sizeof(hints));
+	ADDRINFOT hints = {};
 
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
 	if (GetAddrInfo(host, port, &hints, &res))
-	{
-		Close();
 		return false;
-	}
-
-	Socket = 0;
 
 	for (ptr = res; ptr != NULL; ptr = ptr->ai_next)
 	{
@@ -158,13 +151,21 @@ unsigned int SocketClient::GetPendingDataSize()
 	return size;
 }
 
-void SocketClient::Close()
+bool SocketClient::Close()
 {
-	if (Socket)
+	if (!Socket)
+		return true;
+
+	//error checking, should i do it here?
+	if (shutdown(Socket, SD_BOTH) != 0)
+		return false;
+
+	if (closesocket(Socket) == 0)
 	{
-		closesocket(Socket);
 		Socket = 0;
+		return true;
 	}
+	return false;
 }
 
 bool SocketClient::Clean()
@@ -180,4 +181,5 @@ bool SocketClient::Clean()
 SocketClient::~SocketClient()
 {
 	Close();
+	Clean();
 }
