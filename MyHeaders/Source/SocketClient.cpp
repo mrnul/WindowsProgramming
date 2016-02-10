@@ -102,7 +102,7 @@ int SocketClient::Recieve(void *buffer, const unsigned int len, const SCRFlag fl
 
 bool SocketClient::SetBlockingState(const bool blocking)
 {
-	u_long iMode = blocking ? 1 : 0;
+	u_long iMode = blocking ? 0 : 1;
 	return ioctlsocket(Socket, FIONBIO, &iMode) == 0;
 }
 bool SocketClient::CheckReadability(const unsigned int secs, const unsigned int microsecs)
@@ -111,7 +111,8 @@ bool SocketClient::CheckReadability(const unsigned int secs, const unsigned int 
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(Socket, &fd);
-	return  select(Socket, &fd, 0, 0, &tv) > 0;
+	//msdn: first parameter is ignored
+	return select(0, &fd, 0, 0, &tv) > 0;
 }
 bool SocketClient::CheckWritability(const unsigned int secs, const unsigned int microsecs)
 {
@@ -119,7 +120,8 @@ bool SocketClient::CheckWritability(const unsigned int secs, const unsigned int 
 	fd_set fd;
 	FD_ZERO(&fd);
 	FD_SET(Socket, &fd);
-	return  select(Socket, 0, &fd, 0, &tv) > 0;
+	//msdn: first parameter is ignored
+	return select(0, 0, &fd, 0, &tv) > 0;
 }
 
 bool SocketClient::ShutDownRcv()
