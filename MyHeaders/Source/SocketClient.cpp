@@ -1,29 +1,15 @@
 #include <MyHeaders\SocketClient.h>
 
-SocketClient::SocketClient()
-{
-	Socket = 0;
-}
-
-SocketClient::SocketClient(SOCKET con)
+SocketClient::SocketClient(SOCKET con, const unsigned int major, const unsigned int minor)
 {
 	Socket = con;
+	Init(major, minor);
 }
 
 SocketClient::SocketClient(const unsigned int major, const unsigned int minor)
 {
 	Socket = 0;
 	Init(major, minor);
-}
-
-bool SocketClient::WinsockInitialized()
-{
-	SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (s == INVALID_SOCKET && WSAGetLastError() == WSANOTINITIALISED)
-		return false;
-
-	closesocket(s);
-	return true;
 }
 
 SocketClient::operator SOCKET()
@@ -33,10 +19,9 @@ SocketClient::operator SOCKET()
 
 bool SocketClient::Init(const unsigned int major, const unsigned int minor)
 {
-	if (!WinsockInitialized())
-		return WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
-
-	return false;
+	WSADATA wsaData;
+	Initialized = WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
+	return Initialized;
 }
 
 bool SocketClient::Connect(const TCHAR *host, const TCHAR *port)
@@ -72,7 +57,6 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port)
 	}
 
 	FreeAddrInfo(res);
-
 	return Socket != 0;
 }
 
@@ -105,6 +89,7 @@ bool SocketClient::SetBlockingState(const bool blocking)
 	u_long iMode = blocking ? 0 : 1;
 	return ioctlsocket(Socket, FIONBIO, &iMode) == 0;
 }
+
 bool SocketClient::CheckReadability(const unsigned int secs, const unsigned int microsecs)
 {
 	timeval tv = { secs, microsecs };
@@ -114,6 +99,7 @@ bool SocketClient::CheckReadability(const unsigned int secs, const unsigned int 
 	//msdn: first parameter is ignored
 	return select(0, &fd, 0, 0, &tv) > 0;
 }
+
 bool SocketClient::CheckWritability(const unsigned int secs, const unsigned int microsecs)
 {
 	timeval tv = { secs, microsecs };
@@ -153,14 +139,18 @@ unsigned int SocketClient::GetPendingDataSize()
 	return size;
 }
 
+bool SocketClient::IsInitialized()
+{
+	return Initialized;
+}
+
 bool SocketClient::Close()
 {
 	if (!Socket)
 		return true;
 
 	//error checking, should i do it here?
-	if (shutdown(Socket, SD_BOTH) != 0)
-		return false;
+	shutdown(Socket, SD_BOTH);
 
 	if (closesocket(Socket) == 0)
 	{
@@ -172,11 +162,14 @@ bool SocketClient::Close()
 
 bool SocketClient::Clean()
 {
-	if (WinsockInitialized())
+	if (!Initialized)
+		return true;
+	
+	if (WSACleanup() == 0)
 	{
-		return WSACleanup() == 0;
+		Initialized = false;
+		return true;
 	}
-
 	return false;
 }
 

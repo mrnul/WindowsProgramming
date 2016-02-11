@@ -41,12 +41,10 @@ namespace socketclient
 class SocketClient
 {
 	private:
-		WSADATA wsaData;
 		SOCKET Socket;
-		bool WinsockInitialized();
+		bool Initialized;
 	public:
-		SocketClient();
-		SocketClient(SOCKET con);
+		SocketClient(SOCKET con, const unsigned int major, const unsigned int minor);
 		SocketClient(const unsigned int major, const unsigned int minor);
 		bool Init(const unsigned int major, const unsigned int minor);
 		bool Connect(const TCHAR *host, const TCHAR *port);
@@ -59,6 +57,7 @@ class SocketClient
 		bool ShutDownSnd();
 		unsigned int GetPendingDataSize();
 		operator SOCKET();
+		bool IsInitialized();
 		bool Close();
 		bool Clean();
 		~SocketClient();

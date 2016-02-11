@@ -12,13 +12,11 @@ using std::cin;
 int main()
 {
 	//initialize Winsock, version 2.2
-	//we need a more decent way to do that (?)
 	SocketClient socket(2, 2);
 
 	//port 80 is for http
 	if (!socket.Connect("www.stackoverflow.com", "80"))
 		return -1;
-
 
 	//make it non-blocking
 	//no need to but just a demo
@@ -70,8 +68,6 @@ int main()
 	//no need to do that here, just a demo
 	out.Flush();
 	socket.Close();
-
-	//we need a more decent way to initialize and cleanup Winsock (?)
 	socket.Clean();
 
 	cout << "\nDone" << endl;
