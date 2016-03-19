@@ -22,6 +22,7 @@ class SocketServer
 		SOCKET Socket;
 		bool Initialized;
 	public:
+		SocketServer() :Socket(0), Initialized(false) {}
 		SocketServer(const int major,const int minor);
 		bool Init(const int major,const int minor);
 		bool CreateAndBind(const TCHAR *host, const TCHAR *port);

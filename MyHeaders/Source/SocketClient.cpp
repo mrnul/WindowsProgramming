@@ -2,8 +2,7 @@
 
 SocketClient::SocketClient(SOCKET con, const unsigned int major, const unsigned int minor)
 {
-	Socket = con;
-	Init(major, minor);
+	Init(con, major, minor);
 }
 
 SocketClient::SocketClient(const unsigned int major, const unsigned int minor)
@@ -22,6 +21,20 @@ bool SocketClient::Init(const unsigned int major, const unsigned int minor)
 	WSADATA wsaData;
 	Initialized = WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
 	return Initialized;
+}
+
+bool SocketClient::Init(SOCKET con, const unsigned int major, const unsigned int minor)
+{
+	WSADATA wsaData;
+	Initialized = WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
+	if (Initialized)
+	{
+		Socket = con;
+		return true;
+	}
+
+	Socket = 0;
+	return false;
 }
 
 bool SocketClient::Connect(const TCHAR *host, const TCHAR *port)
@@ -164,13 +177,12 @@ bool SocketClient::Clean()
 {
 	if (!Initialized)
 		return true;
-	
-	if (WSACleanup() == 0)
-	{
-		Initialized = false;
-		return true;
-	}
-	return false;
+
+	if (WSACleanup() != 0)
+		return false;
+
+	Initialized = false;
+	return true;
 }
 
 SocketClient::~SocketClient()

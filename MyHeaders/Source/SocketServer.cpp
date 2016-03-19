@@ -123,12 +123,11 @@ bool SocketServer::Clean()
 	if (!Initialized)
 		return true;
 
-	if (WSACleanup() == 0)
-	{
-		Initialized = false;
-		return true;
-	}
-	return false;
+	if (WSACleanup() != 0)
+		return false;
+
+	Initialized = false;
+	return true;
 }
 
 SocketServer::~SocketServer()

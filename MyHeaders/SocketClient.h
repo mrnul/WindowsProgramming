@@ -44,9 +44,11 @@ class SocketClient
 		SOCKET Socket;
 		bool Initialized;
 	public:
+		SocketClient() :Socket(0), Initialized(false) {}
 		SocketClient(SOCKET con, const unsigned int major, const unsigned int minor);
 		SocketClient(const unsigned int major, const unsigned int minor);
 		bool Init(const unsigned int major, const unsigned int minor);
+		bool Init(SOCKET con, const unsigned int major, const unsigned int minor);
 		bool Connect(const TCHAR *host, const TCHAR *port);
 		int Send(const void *buffer, const unsigned int len, const SCSFlag flags = socketclient::Sflag::Default);
 		int Recieve(void *buffer, const unsigned int len, const SCRFlag flags = socketclient::Rflag::Default);
