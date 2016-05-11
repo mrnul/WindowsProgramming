@@ -3,6 +3,8 @@
 #include <MyHeaders\windowdefs.h>
 #include <Windows.h>
 #include <Windowsx.h>
+#include <Commctrl.h>
+#pragma comment(lib,"Comctl32.lib")
 
 CREATE_NEW_DATA_TYPE(BStyle);
 CREATE_NEW_DATA_TYPE(BExStyle);
@@ -79,6 +81,8 @@ class Button
 		bool IsEnabled();
 		bool IsVisible();
 		void Enable(bool enable = true);
+		bool SetControlProc(SUBCLASSPROC proc, UINT_PTR id = 0, DWORD_PTR data = 0);
+		bool RemoveControlProc(SUBCLASSPROC proc, UINT_PTR id = 0);
 		operator HWND();
 		bool Destroy();
 		~Button();

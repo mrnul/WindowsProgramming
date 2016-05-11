@@ -5,6 +5,8 @@
 #include <Windows.h>
 
 #include <MyHeaders\windowdefs.h>
+#include <Commctrl.h>
+#pragma comment(lib,"Comctl32.lib")
 
 CREATE_NEW_DATA_TYPE(SBStyle);
 CREATE_NEW_DATA_TYPE(SBExStyle);
@@ -103,6 +105,8 @@ class StaticBox
 		int GetTextLength();
 		bool IsVisible();
 		bool IsEnabled();
+		bool SetControlProc(SUBCLASSPROC proc, UINT_PTR id = 0, DWORD_PTR data = 0);
+		bool RemoveControlProc(SUBCLASSPROC proc, UINT_PTR id = 0);
 		LRESULT SetBitmap(const HBITMAP bmp);
 		LRESULT SetIcon(const HICON icon);
 		bool Destroy();

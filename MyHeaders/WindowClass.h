@@ -3,7 +3,6 @@
 #define MyHeaders_WindowClass
 
 #include <Windows.h>
-#include <MyHeaders\WindowClass.h>
 #include <MyHeaders\Cursor.h>
 #include <MyHeaders\Icon.h>
 #include <MyHeaders\windowdefs.h>

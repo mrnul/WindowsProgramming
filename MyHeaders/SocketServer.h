@@ -26,6 +26,8 @@ class SocketServer
 		SocketServer(const int major,const int minor);
 		bool Init(const int major,const int minor);
 		bool CreateAndBind(const TCHAR *host, const TCHAR *port);
+		char* GetLocalMachineIP(); //it just returns the last address found
+		void GetClientAddress(SOCKET client, char *clientAddress);
 		bool Listen();
 		SOCKET Accept();
 		bool IsInitialized();

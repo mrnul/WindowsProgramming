@@ -41,6 +41,16 @@ bool StaticBox::IsEnabled()
 	return IsWindowEnabled(Handle) != 0;
 }
 
+bool StaticBox::SetControlProc(SUBCLASSPROC proc, UINT_PTR id, DWORD_PTR data)
+{
+	return SetWindowSubclass(Handle, proc, id, data) != 0;
+}
+
+bool StaticBox::RemoveControlProc(SUBCLASSPROC proc, UINT_PTR id)
+{
+	return RemoveWindowSubclass(Handle, proc, id) != 0;
+}
+
 StaticBox::operator HWND()
 {
 	return Handle;

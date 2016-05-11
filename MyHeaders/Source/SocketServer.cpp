@@ -21,6 +21,7 @@ bool SocketServer::CreateAndBind(const TCHAR *host, const TCHAR *port)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
+	hints.ai_protocol = IPPROTO_TCP;
 
 	if (GetAddrInfo(host, port, &hints, &res) != 0)
 	{
@@ -48,6 +49,42 @@ bool SocketServer::CreateAndBind(const TCHAR *host, const TCHAR *port)
 	return true;
 }
 
+char* SocketServer::GetLocalMachineIP()
+{
+	wchar_t hostname[512];
+	char *buffer = 0;
+
+	GetHostNameW(hostname, 512);
+
+	ADDRINFOW *result;
+	ADDRINFOW hints = {};
+
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+
+	if (GetAddrInfoW(hostname, 0, &hints, &result) != 0)
+		return 0;
+
+	for (ADDRINFOW *ptr = result; ptr != 0; ptr = ptr->ai_next)
+	{
+		SOCKADDR_IN *tmp = (SOCKADDR_IN*)ptr->ai_addr;
+		buffer = inet_ntoa(tmp->sin_addr);
+	}
+
+	return buffer;
+}
+
+void SocketServer::GetClientAddress(SOCKET client, char *clientAddress)
+{
+	SOCKADDR_IN addr1;
+	int len1 = sizeof(addr1);
+	if (getpeername(client, (SOCKADDR*)&addr1, &len1) != 0)
+		return;
+
+	strcpy(clientAddress, inet_ntoa(addr1.sin_addr));
+}
+
 bool SocketServer::Listen()
 {
 	if (listen(Socket, SOMAXCONN) == SOCKET_ERROR)
@@ -66,6 +103,7 @@ SOCKET SocketServer::Accept()
 		Close();
 		res = 0;
 	}
+
 	return res;
 }
 

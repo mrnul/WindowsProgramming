@@ -9,7 +9,7 @@
 
 CREATE_NEW_DATA_TYPE(FAccess);
 CREATE_NEW_DATA_TYPE(FMode);
-CREATE_NEW_DATA_TYPE(FFlags);
+CREATE_NEW_DATA_TYPE(FFlag);
 CREATE_NEW_DATA_TYPE(FShare);
 CREATE_NEW_DATA_TYPE(FMethod);
 
@@ -29,17 +29,17 @@ namespace file
 		const FMode CreateNew(CREATE_NEW);
 		const FMode Truncate(TRUNCATE_EXISTING);
 	}
-	namespace flags
+	namespace flag
 	{
-		const FFlags NoBuffer(FILE_FLAG_NO_BUFFERING);
-		const FFlags Normal(FILE_ATTRIBUTE_NORMAL);
-		const FFlags Hidden(FILE_ATTRIBUTE_HIDDEN);
-		const FFlags NoCache(FILE_FLAG_WRITE_THROUGH);
-		const FFlags ReadOnly(FILE_ATTRIBUTE_READONLY);
-		const FFlags RndAccess(FILE_FLAG_RANDOM_ACCESS);
-		const FFlags SeqAccess(FILE_FLAG_SEQUENTIAL_SCAN);
-		const FFlags DelOnClose(FILE_FLAG_DELETE_ON_CLOSE);
-		const FFlags Temp(FILE_ATTRIBUTE_TEMPORARY);
+		const FFlag NoBuffer(FILE_FLAG_NO_BUFFERING);
+		const FFlag Normal(FILE_ATTRIBUTE_NORMAL);
+		const FFlag Hidden(FILE_ATTRIBUTE_HIDDEN);
+		const FFlag NoCache(FILE_FLAG_WRITE_THROUGH);
+		const FFlag ReadOnly(FILE_ATTRIBUTE_READONLY);
+		const FFlag RndAccess(FILE_FLAG_RANDOM_ACCESS);
+		const FFlag SeqAccess(FILE_FLAG_SEQUENTIAL_SCAN);
+		const FFlag DelOnClose(FILE_FLAG_DELETE_ON_CLOSE);
+		const FFlag Temp(FILE_ATTRIBUTE_TEMPORARY);
 	}
 	namespace share
 	{
@@ -96,11 +96,40 @@ class EnumFiles
 		HANDLE Handle;
 		WIN32_FIND_DATA Data;
 	public:
-		bool FindFirst(const TCHAR *path) { return (Handle = FindFirstFile(path, &Data)) != INVALID_HANDLE_VALUE; }
-		bool FindNext() { return FindNextFile(Handle, &Data) != 0; }
-		bool Reset() const { ZeroMemory((void*)&Data, sizeof(Data)); return FindClose(Handle) != 0; }
-		const WIN32_FIND_DATA* GetFileInfo() const { return &Data; }
-		~EnumFiles() { Reset(); }
+		EnumFiles() :Handle(0) {}
+		bool FindFirst(const TCHAR *path) 
+		{ 
+			Reset();
+			Handle = FindFirstFile(path, &Data);
+			if (Handle == INVALID_HANDLE_VALUE)
+			{
+				Handle = 0;
+				return false;
+			}
+
+			return true;
+		}
+		bool FindNext() 
+		{
+			bool ret = FindNextFile(Handle, &Data) != 0;
+			return ret;
+		}
+		bool Reset() 
+		{ 
+			if (!Handle)
+				return true;
+
+			ZeroMemory((void*)&Data, sizeof(Data));
+			return FindClose(Handle) != 0; 
+		}
+		const WIN32_FIND_DATA& GetFileInfo() 
+		{
+			return Data;
+		}
+		~EnumFiles() 
+		{
+			Reset();
+		}
 };
 
 
@@ -116,11 +145,11 @@ class File
 		File(const TCHAR *fullpath, const FAccess access = file::access::ReadWrite,
 			const FShare share = file::share::ReadWrite,
 			const FMode openmode = file::openmode::OpenAlways,
-			const FFlags = file::flags::Normal);
+			const FFlag = file::flag::Normal);
 		bool Open(const TCHAR *fullpath, const FAccess access = file::access::ReadWrite,
 			const FShare share = file::share::ReadWrite,
 			const FMode openmode = file::openmode::OpenAlways,
-			const FFlags = file::flags::Normal);
+			const FFlag = file::flag::Normal);
 		bool Seek(const unsigned long long int pos, const FMethod method = file::method::Begin);
 		unsigned long long int GetSize(void);
 		unsigned long long int CurrentPos(void);

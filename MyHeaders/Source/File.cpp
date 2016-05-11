@@ -29,7 +29,7 @@ unsigned int MakePath(const TCHAR *path)
 unsigned long long int FileSize(const TCHAR *path)
 {
 	HANDLE hnd = CreateFile(path, file::access::Read, file::share::All, 0,
-		file::openmode::OpenExisting, file::flags::Normal, 0);
+		file::openmode::OpenExisting, file::flag::Normal, 0);
 
 	if (hnd == INVALID_HANDLE_VALUE)
 		return -1;
@@ -64,13 +64,13 @@ File::File()
 	Lastread = Lastwrite = 0;
 }
 
-File::File(const TCHAR *fullpath, const FAccess access,const FShare share, const FMode openmode, const FFlags flags)
+File::File(const TCHAR *fullpath, const FAccess access,const FShare share, const FMode openmode, const FFlag flags)
 	:Handle(0), Fullpath(0), Lastread(0), Lastwrite(0)
 {
 	Open(fullpath, access, share, openmode, flags);
 }
 
-bool File::Open(const TCHAR *fullpath, const FAccess access, const FShare share, const FMode openmode, const FFlags flags)
+bool File::Open(const TCHAR *fullpath, const FAccess access, const FShare share, const FMode openmode, const FFlag flags)
 {
 	if ((Handle = CreateFile(fullpath, access, share, 0, openmode, flags, 0)) == INVALID_HANDLE_VALUE)
 	{

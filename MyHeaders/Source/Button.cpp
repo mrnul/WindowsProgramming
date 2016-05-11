@@ -10,11 +10,6 @@ Button::Button(const TCHAR *title, const DWORD ID, const HWND parent, const int 
 	Create(title, ID, parent, x, y, width, height, style, exstyle);
 }
 
-void Button::Enable(bool enable)
-{
-	Button_Enable(Handle, enable);
-}
-
 bool Button::Create(const TCHAR *title, const DWORD ID, const HWND parent, const int x, const int y, const int width, const int height, const BStyle style, const BExStyle exstyle)
 {
 	return (Handle = CreateWindowEx(exstyle, TEXT("BUTTON"), title, style.operator unsigned int() | WS_CHILD, x, y, width, height, parent, (HMENU)ID, GetModuleHandle(0), 0)) != 0;
@@ -43,6 +38,21 @@ bool Button::IsEnabled()
 bool Button::IsVisible()
 {
 	return IsWindowVisible(Handle) != 0;
+}
+
+void Button::Enable(bool enable)
+{
+	Button_Enable(Handle, enable);
+}
+
+bool Button::SetControlProc(SUBCLASSPROC proc, UINT_PTR id, DWORD_PTR data)
+{
+	return SetWindowSubclass(Handle, proc, id, data) != 0;
+}
+
+bool Button::RemoveControlProc(SUBCLASSPROC proc, UINT_PTR id)
+{
+	return RemoveWindowSubclass(Handle, proc, id) != 0;
 }
 
 bool Button::Destroy()
