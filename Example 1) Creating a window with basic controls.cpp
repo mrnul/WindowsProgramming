@@ -28,6 +28,7 @@ WINMAIN(hin, cmd, show)
 	
 	
 	//list view coming soon...
+	//i lied, list views bore me to death
 	
 	win.MessageLoop();
 
