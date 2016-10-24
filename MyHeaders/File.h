@@ -120,7 +120,12 @@ class EnumFiles
 				return true;
 
 			ZeroMemory((void*)&Data, sizeof(Data));
-			return FindClose(Handle) != 0; 
+			if (FindClose(Handle))
+			{
+				Handle = 0;
+				return true;
+			}
+			return false;
 		}
 		const WIN32_FIND_DATA& GetFileInfo() 
 		{

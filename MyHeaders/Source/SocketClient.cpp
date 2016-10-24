@@ -7,7 +7,6 @@ SocketClient::SocketClient(SOCKET con, const unsigned int major, const unsigned 
 
 SocketClient::SocketClient(const unsigned int major, const unsigned int minor)
 {
-	Socket = 0;
 	Init(major, minor);
 }
 
@@ -19,25 +18,35 @@ SocketClient::operator SOCKET()
 bool SocketClient::Init(const unsigned int major, const unsigned int minor)
 {
 	WSADATA wsaData;
-	Initialized = WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
-	return Initialized;
+	Initialized = (WSAStartup(MAKEWORD(major, minor), &wsaData) == 0);
+	if (!Initialized)
+		return false;
+
+	if ((Socket = socket(AF_UNSPEC, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
+	{
+		if (WSACleanup() != 0)
+			return false;
+
+		Initialized = false;
+		Socket = 0;
+	}
+
+	return Socket != 0;
 }
 
 bool SocketClient::Init(SOCKET con, const unsigned int major, const unsigned int minor)
 {
-	WSADATA wsaData;
-	Initialized = WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
-	if (Initialized)
-	{
-		Socket = con;
-		return true;
-	}
-
 	Socket = 0;
-	return false;
+
+	WSADATA wsaData;
+	Initialized = (WSAStartup(MAKEWORD(major, minor), &wsaData) == 0);
+	if (Initialized)
+		Socket = con;
+
+	return Socket != 0;
 }
 
-bool SocketClient::Connect(const TCHAR *host, const TCHAR *port)
+bool SocketClient::Connect(const TCHAR *host, const TCHAR *port, const unsigned int secs, const unsigned int microsecs)
 {
 	ADDRINFOT *res;
 	ADDRINFOT *ptr;
@@ -45,29 +54,46 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port)
 
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
 
 	if (GetAddrInfo(host, port, &hints, &res))
 		return false;
 
 	for (ptr = res; ptr != NULL; ptr = ptr->ai_next)
 	{
-		Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-
-		if (Socket == INVALID_SOCKET)
+		if ((Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol)) == INVALID_SOCKET)
 		{
 			Socket = 0;
 			continue;
 		}
 
-		if (connect(Socket, ptr->ai_addr, ptr->ai_addrlen) == SOCKET_ERROR)
+		if (!SetNonBlocking(true))
 		{
 			closesocket(Socket);
 			Socket = 0;
-			continue;
+			break;
 		}
 
+		//if
+		if (connect(Socket, ptr->ai_addr, ptr->ai_addrlen) == 0)
+			break;
+
+		//else if
+		if (WSAGetLastError() == WSAEWOULDBLOCK)
+		{
+			if (!CheckWritability(secs, microsecs))
+			{
+				closesocket(Socket);
+				Socket = 0;
+				continue;
+			}
+		}
+
+		//else
 		break;
 	}
+
+	SetNonBlocking(false);
 
 	FreeAddrInfo(res);
 	return Socket != 0;
@@ -77,10 +103,7 @@ int SocketClient::Send(const void *buffer, const unsigned int len, const SCSFlag
 {
 	int res;
 	if ((res = send(Socket, (const char*)buffer, len, flags)) == SOCKET_ERROR)
-	{
 		Close();
-		return 0;
-	}
 
 	return res;
 }
@@ -89,17 +112,14 @@ int SocketClient::Recieve(void *buffer, const unsigned int len, const SCRFlag fl
 {
 	int res;
 	if ((res = recv(Socket, (char*)buffer, len, flags)) == SOCKET_ERROR)
-	{
 		Close();
-		return 0;
-	}
 
 	return res;
 }
 
-bool SocketClient::SetBlockingState(const bool blocking)
+bool SocketClient::SetNonBlocking(const bool nonBlocking)
 {
-	u_long iMode = blocking ? 0 : 1;
+	u_long iMode = nonBlocking ? 1 : 0;
 	return ioctlsocket(Socket, FIONBIO, &iMode) == 0;
 }
 
@@ -163,14 +183,15 @@ bool SocketClient::Close()
 		return true;
 
 	//error checking, should i do it here?
-	shutdown(Socket, SD_BOTH);
+	shutdown(Socket, SD_SEND);
+
+	char tmp[512];
+	while (recv(Socket, tmp, 512, 0) > 0);
 
 	if (closesocket(Socket) == 0)
-	{
 		Socket = 0;
-		return true;
-	}
-	return false;
+
+	return Socket == 0;
 }
 
 bool SocketClient::Clean()
