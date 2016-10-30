@@ -51,8 +51,9 @@ class SocketClient
 		bool Init(const unsigned int major, const unsigned int minor);
 		bool Init(SOCKET con, const unsigned int major, const unsigned int minor);
 		bool Connect(const TCHAR *host, const TCHAR *port, const unsigned int secs = 5, const unsigned int microsecs = 0);
-		int Send(const void *buffer, const unsigned int len, const SCSFlag flags = socketclient::Sflag::Default);
-		int Recieve(void *buffer, const unsigned int len, const SCRFlag flags = socketclient::Rflag::Default);
+		int Send(const void *buffer, const int len, const SCSFlag flags = socketclient::Sflag::Default);
+		int Recieve(void *buffer, const int len, const SCRFlag flags = socketclient::Rflag::Default);
+		int RecieveNBytes(void *buffer, const int n, const unsigned int waitSeconds = 5);
 		bool SetNonBlocking(const bool blocking = true);
 		bool CheckReadability(const unsigned int secs, const unsigned int microsecs = 0);
 		bool CheckWritability(const unsigned int secs, const unsigned int microsecs = 0);

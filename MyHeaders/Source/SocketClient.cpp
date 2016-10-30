@@ -99,7 +99,7 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port, const unsigned 
 	return Socket != 0;
 }
 
-int SocketClient::Send(const void *buffer, const unsigned int len, const SCSFlag flags)
+int SocketClient::Send(const void *buffer, const int len, const SCSFlag flags)
 {
 	int res;
 	if ((res = send(Socket, (const char*)buffer, len, flags)) == SOCKET_ERROR)
@@ -108,13 +108,31 @@ int SocketClient::Send(const void *buffer, const unsigned int len, const SCSFlag
 	return res;
 }
 
-int SocketClient::Recieve(void *buffer, const unsigned int len, const SCRFlag flags)
+int SocketClient::Recieve(void *buffer, const int len, const SCRFlag flags)
 {
 	int res;
 	if ((res = recv(Socket, (char*)buffer, len, flags)) == SOCKET_ERROR)
 		Close();
 
 	return res;
+}
+
+int SocketClient::RecieveNBytes(void *buffer, const int n, const unsigned int waitSeconds)
+{
+	int total = 0;
+	while (total < n)
+	{
+		if (!CheckReadability(waitSeconds))
+			break;
+
+		const int tmp = recv(Socket, (char*)buffer + total, n - total, 0);
+		if (tmp <= 0)
+			break;
+
+		total += tmp;
+	}
+
+	return total;
 }
 
 bool SocketClient::SetNonBlocking(const bool nonBlocking)
@@ -177,6 +195,7 @@ bool SocketClient::IsInitialized()
 	return Initialized;
 }
 
+//gracefully closed?
 bool SocketClient::Close()
 {
 	if (!Socket)
