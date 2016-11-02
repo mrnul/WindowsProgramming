@@ -18,9 +18,9 @@ bool ControlBaseClass::Init(HWND parent, const unsigned int id)
 	return (ControlHandle = GetDlgItem(ParentHandle = parent, ControlID = id)) != 0;
 }
 
-bool ControlBaseClass::SetWLongPtr(int index, LONG_PTR newValue)
+bool ControlBaseClass::SetWLongPtr(int index, void *newValue)
 {
-	return SetWindowLongPtr(ControlHandle, index, newValue) != 0;
+	return SetWindowLongPtr(ControlHandle, index, (LONG_PTR)newValue) != 0;
 }
 
 LONG_PTR ControlBaseClass::GetWLongPtr(int index)

@@ -19,9 +19,9 @@ bool Dialog::Create(const unsigned int ID, DLGPROC proc, void *param, HWND paren
 	return (Handle = CreateDialogParam(0, MAKEINTRESOURCE(ID), parent, proc, (LPARAM)param)) != 0;
 }
 
-bool Dialog::SetWLongPtr(int index, LONG_PTR newValue)
+bool Dialog::SetWLongPtr(int index, void *newValue)
 {
-	return SetWindowLongPtr(Handle, index, newValue) != 0;
+	return SetWindowLongPtr(Handle, index, (LONG_PTR)newValue) != 0;
 }
 
 LONG_PTR Dialog::GetWLongPtr(int index)

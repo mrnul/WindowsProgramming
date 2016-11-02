@@ -26,7 +26,7 @@ class Dialog
 		Dialog();
 		Dialog(const unsigned int ID, DLGPROC proc, void *param = 0, HWND parent = 0);
 		bool Create(const unsigned int ID, DLGPROC proc, void *param = 0, HWND parent = 0);
-		bool SetWLongPtr(int index, LONG_PTR newValue);
+		bool SetWLongPtr(int index, void *newValue);
 		LONG_PTR GetWLongPtr(int index);
 		void MessageLoop();
 		bool MessageWaiting();

@@ -15,7 +15,7 @@ class ControlBaseClass
 		ControlBaseClass();
 		ControlBaseClass(HWND parent, const unsigned int id);
 		bool Init(HWND parent, const unsigned int id);
-		bool SetWLongPtr(int index, LONG_PTR newValue);
+		bool SetWLongPtr(int index, void *newValue);
 		LONG_PTR GetWLongPtr(int index);
 		void Enable(const bool enable = true);
 		bool IsEnabled();
