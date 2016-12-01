@@ -72,6 +72,7 @@ int main()
 		SocketClient client(server.Accept(), 2, 2);
 
 		//get and print the http request
+		const int size = client.Recieve(buff, BUFF_SIZE - 1);
 		buff[size] = 0;
 		cout << buff << endl;
 
