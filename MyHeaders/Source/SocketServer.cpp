@@ -1,15 +1,15 @@
 #include <MyHeaders\SocketServer.h>
 
-SocketServer::SocketServer(const int major, const int minor)
+SocketServer::SocketServer()
 {
 	Socket = 0;
-	Init(major, minor);
+	Init();
 }
 
-bool SocketServer::Init(const int major, const int minor)
+bool SocketServer::Init()
 {
 	WSADATA wsaData;
-	Initialized = WSAStartup(MAKEWORD(major, minor), &wsaData) == 0;
+	Initialized = WSAStartup(MAKEWORD(MAJOR_WINSOCK_VER, MINOR_WINSOCK_VER), &wsaData) == 0;
 	return Initialized;
 }
 
@@ -107,9 +107,9 @@ bool SocketServer::IsInitialized()
 	return Initialized;
 }
 
-bool SocketServer::SetBlockingState(const bool blocking)
+bool SocketServer::SetNonBlocking(const bool nonBlocking)
 {
-	u_long iMode = blocking ? 0 : 1;
+	u_long iMode = nonBlocking ? 1 : 0;
 	return ioctlsocket(Socket, FIONBIO, &iMode) == 0;
 }
 

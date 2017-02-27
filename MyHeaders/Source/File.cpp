@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include <MyHeaders\File.h>
 
 unsigned int MakePath(const TCHAR *path)
@@ -59,43 +58,33 @@ unsigned long long int FileSize(const HANDLE hnd)
 
 File::File()
 {
-	Handle = 0;
-	Fullpath = 0;
+	Handle = INVALID_HANDLE_VALUE;
 	Lastread = Lastwrite = 0;
 }
 
 File::File(const TCHAR *fullpath, const FAccess access,const FShare share, const FMode openmode, const FFlag flags)
-	:Handle(0), Fullpath(0), Lastread(0), Lastwrite(0)
 {
+	Handle = INVALID_HANDLE_VALUE;
+	Lastread = Lastwrite = 0;
 	Open(fullpath, access, share, openmode, flags);
 }
 
 bool File::Open(const TCHAR *fullpath, const FAccess access, const FShare share, const FMode openmode, const FFlag flags)
 {
-	if ((Handle = CreateFile(fullpath, access, share, 0, openmode, flags, 0)) == INVALID_HANDLE_VALUE)
-	{
-		Handle = 0;
-		return false;
-	}
-
-	return AllocAndCopy(Fullpath, fullpath, (_tcslen(fullpath) + 1)*sizeof(TCHAR));
+	Handle = CreateFile(fullpath, access, share, 0, openmode, flags, 0);
+	return Handle != INVALID_HANDLE_VALUE;
 }
 
 bool File::Close()
 {
-	if (!Handle)
+	if (Handle == INVALID_HANDLE_VALUE)
 		return true;
 
-	if (Fullpath)
-		hfree(Fullpath);
+	if (CloseHandle(Handle) == 0)
+		return false;
 
-	if (CloseHandle(Handle))
-	{
-		Handle = 0;
-		return true;
-	}
-
-	return false;
+	Handle = INVALID_HANDLE_VALUE;
+	return true;
 }
 
 bool File::Seek(const unsigned long long int pos, const FMethod method)
@@ -104,13 +93,13 @@ bool File::Seek(const unsigned long long int pos, const FMethod method)
 	return SetFilePointerEx(Handle, newpos, 0, method) != 0;
 }
 
-unsigned long long int File::GetSize(void)
+unsigned long long int File::GetSize()
 {
 	LARGE_INTEGER sz;
 	return (GetFileSizeEx(Handle, &sz) ? sz.QuadPart : 0);
 }
 
-unsigned long long int File::CurrentPos(void)
+unsigned long long int File::CurrentPos()
 {
 	LARGE_INTEGER zero = {};
 	LARGE_INTEGER currentpos = {};
@@ -137,50 +126,28 @@ bool File::SetSize(const unsigned long long int bytes)
 	return SetEndOfFile(Handle) != 0;
 }
 
-DWORD File::LastRead(void)
+DWORD File::LastRead()
 {
 	return Lastread;
 }
 
-DWORD File::LastWrite(void)
+DWORD File::LastWrite()
 {
 	return Lastwrite;
 }
 
 
-bool File::Flush(void)
+bool File::Flush()
 {
 	return FlushFileBuffers(Handle) != 0;
 }
 
-File::operator HANDLE(void)
+File::operator HANDLE()
 {
 	return Handle;
 }
 
-const TCHAR* File::GetFullPath(void)
-{
-	return Fullpath;
-}
-
-bool File::Delete(void)
-{
-	if (Handle)
-	{
-		if (!CloseHandle(Handle))
-			return false;
-		Handle = 0;
-	}
-
-	if (!Fullpath) // do we really need this check?
-		return false;
-
-	bool delOK = DeleteFile(Fullpath) != 0;
-	hfree(Fullpath);
-	return delOK;
-}
-
-File::~File(void)
+File::~File()
 {
 	Close();
 }

@@ -144,9 +144,8 @@ class File
 		HANDLE Handle;
 		DWORD Lastread;
 		DWORD Lastwrite;
-		TCHAR *Fullpath;
 	public:
-		File(void);
+		File();
 		File(const TCHAR *fullpath, const FAccess access = file::access::ReadWrite,
 			const FShare share = file::share::ReadWrite,
 			const FMode openmode = file::openmode::OpenAlways,
@@ -156,17 +155,15 @@ class File
 			const FMode openmode = file::openmode::OpenAlways,
 			const FFlag = file::flag::Normal);
 		bool Seek(const unsigned long long int pos, const FMethod method = file::method::Begin);
-		unsigned long long int GetSize(void);
-		unsigned long long int CurrentPos(void);
+		unsigned long long int GetSize();
+		unsigned long long int CurrentPos();
 		unsigned int Read(void *data, const unsigned int size);
 		unsigned int Write(const void *data, const unsigned int size);
 		bool SetSize(const unsigned long long int bytes);
-		DWORD LastRead(void);
-		DWORD LastWrite(void);
-		bool Close(void);
-		bool Flush(void);
-		operator HANDLE(void);
-		const TCHAR *GetFullPath(void);
-		bool Delete(void);
-		~File(void);
+		DWORD LastRead();
+		DWORD LastWrite();
+		bool Close();
+		bool Flush();
+		operator HANDLE();
+		~File();
 };

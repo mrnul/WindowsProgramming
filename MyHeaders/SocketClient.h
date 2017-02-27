@@ -6,10 +6,11 @@
 #ifdef _INC_WINDOWS || _WINSOCK2API_
 #error SocketServer.h  or SocketClient.h must be included first!
 #endif
-#endif
 
-#ifndef  WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
+#endif //MyHeaders_SocketServer
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <windows.h>
@@ -17,7 +18,6 @@
 #include <Ws2tcpip.h>
 #include <MyHeaders\windowdefs.h>
 #pragma comment(lib, "ws2_32.lib")
-
 
 CREATE_NEW_DATA_TYPE(SCSFlag);
 CREATE_NEW_DATA_TYPE(SCRFlag);
@@ -45,18 +45,17 @@ class SocketClient
 		SOCKET Socket;
 		bool Initialized;
 	public:
-		SocketClient() :Socket(0), Initialized(false) {}
-		SocketClient(SOCKET con, const unsigned int major, const unsigned int minor);
-		SocketClient(const unsigned int major, const unsigned int minor);
-		bool Init(const unsigned int major, const unsigned int minor);
-		bool Init(SOCKET con, const unsigned int major, const unsigned int minor);
+		SocketClient();
+		SocketClient(SOCKET con);
+		bool Init();
+		bool Init(SOCKET con);
 		bool Connect(const TCHAR *host, const TCHAR *port, const unsigned int secs = 5, const unsigned int microsecs = 0);
 		int Send(const void *buffer, const int len, const SCSFlag flags = socketclient::Sflag::Default);
 		int Recieve(void *buffer, const int len, const SCRFlag flags = socketclient::Rflag::Default);
 		int RecieveNBytes(void *buffer, const int n, const unsigned int waitSeconds = 5);
-		bool SetNonBlocking(const bool blocking = true);
-		bool CheckReadability(const unsigned int secs, const unsigned int microsecs = 0);
-		bool CheckWritability(const unsigned int secs, const unsigned int microsecs = 0);
+		bool SetNonBlocking(const bool nonBlocking = true);
+		bool CheckReadability(const unsigned int secs = 0, const unsigned int microsecs = 0);
+		bool CheckWritability(const unsigned int secs = 0, const unsigned int microsecs = 0);
 		bool ShutDownRcv();
 		bool ShutDownSnd();
 		unsigned int GetPendingDataSize();

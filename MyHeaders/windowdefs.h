@@ -16,3 +16,6 @@
 
 #define CONTROLPROC(name, handle, msg, wp, lp, id, data)	LRESULT CALLBACK name(HWND handle, UINT msg, WPARAM wp, LPARAM lp, UINT_PTR id, DWORD_PTR data)
 #define DEFCONTROLPROC(handle, msg, wp, lp)					DefSubclassProc(handle, msg, wp, lp)
+
+#define MAJOR_WINSOCK_VER 2
+#define MINOR_WINSOCK_VER 2

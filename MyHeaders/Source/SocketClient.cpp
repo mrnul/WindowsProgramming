@@ -1,13 +1,13 @@
 #include <MyHeaders\SocketClient.h>
 
-SocketClient::SocketClient(SOCKET con, const unsigned int major, const unsigned int minor)
+SocketClient::SocketClient()
 {
-	Init(con, major, minor);
+	Init();
 }
 
-SocketClient::SocketClient(const unsigned int major, const unsigned int minor)
+SocketClient::SocketClient(SOCKET con)
 {
-	Init(major, minor);
+	Init(con);
 }
 
 SocketClient::operator SOCKET()
@@ -15,35 +15,29 @@ SocketClient::operator SOCKET()
 	return Socket;
 }
 
-bool SocketClient::Init(const unsigned int major, const unsigned int minor)
+bool SocketClient::Init()
 {
+	Socket = INVALID_SOCKET;
+
 	WSADATA wsaData;
-	Initialized = (WSAStartup(MAKEWORD(major, minor), &wsaData) == 0);
+	Initialized = (WSAStartup(MAKEWORD(MAJOR_WINSOCK_VER, MINOR_WINSOCK_VER), &wsaData) == 0);
+
+	return Initialized;
+}
+
+bool SocketClient::Init(SOCKET con)
+{
+	Socket = INVALID_SOCKET;
+
+	WSADATA wsaData;
+	Initialized = (WSAStartup(MAKEWORD(MAJOR_WINSOCK_VER, MINOR_WINSOCK_VER), &wsaData) == 0);
+
 	if (!Initialized)
 		return false;
 
-	if ((Socket = socket(AF_UNSPEC, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
-	{
-		if (WSACleanup() != 0)
-			return false;
+	Socket = con;
 
-		Initialized = false;
-		Socket = 0;
-	}
-
-	return Socket != 0;
-}
-
-bool SocketClient::Init(SOCKET con, const unsigned int major, const unsigned int minor)
-{
-	Socket = 0;
-
-	WSADATA wsaData;
-	Initialized = (WSAStartup(MAKEWORD(major, minor), &wsaData) == 0);
-	if (Initialized)
-		Socket = con;
-
-	return Socket != 0;
+	return SetNonBlocking(true);
 }
 
 bool SocketClient::Connect(const TCHAR *host, const TCHAR *port, const unsigned int secs, const unsigned int microsecs)
@@ -62,16 +56,13 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port, const unsigned 
 	for (ptr = res; ptr != NULL; ptr = ptr->ai_next)
 	{
 		if ((Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol)) == INVALID_SOCKET)
-		{
-			Socket = 0;
 			continue;
-		}
 
 		if (!SetNonBlocking(true))
 		{
 			closesocket(Socket);
-			Socket = 0;
-			break;
+			Socket = INVALID_SOCKET;
+			continue;
 		}
 
 		//if
@@ -84,7 +75,7 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port, const unsigned 
 			if (!CheckWritability(secs, microsecs))
 			{
 				closesocket(Socket);
-				Socket = 0;
+				Socket = INVALID_SOCKET;
 				continue;
 			}
 		}
@@ -92,8 +83,6 @@ bool SocketClient::Connect(const TCHAR *host, const TCHAR *port, const unsigned 
 		//else
 		break;
 	}
-
-	SetNonBlocking(false);
 
 	FreeAddrInfo(res);
 	return Socket != 0;
@@ -198,7 +187,7 @@ bool SocketClient::IsInitialized()
 //gracefully closed?
 bool SocketClient::Close()
 {
-	if (!Socket)
+	if (Socket == INVALID_SOCKET)
 		return true;
 
 	//error checking, should i do it here?
@@ -208,9 +197,9 @@ bool SocketClient::Close()
 	while (recv(Socket, tmp, 512, 0) > 0);
 
 	if (closesocket(Socket) == 0)
-		Socket = 0;
+		Socket = INVALID_SOCKET;
 
-	return Socket == 0;
+	return Socket == INVALID_SOCKET;
 }
 
 bool SocketClient::Clean()
