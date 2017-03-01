@@ -1,50 +1,54 @@
 #include <MyHeaders\SocketClient.h>
+#include <MyHeaders\SocketServer.h>
 #include <MyHeaders\File.h>
+#include <MyHeaders\Buffer.h>
+#include <string>
+using std::string;
+
+#define BUFFER_SZ (1024 * 1024 * 5)
 
 int main()
 {
-	SocketClient client(2, 2);
+	SocketClient client;
+	client.Connect("www.stackoverflow.com", "http");
 
-	if (!client.IsInitialized())
-		return 0;
-	
-	if (!client.Connect(L"stackoverflow.com", L"80"))
-		return 0;
-
-	if (!client.SetNonBlocking())
-		return 0;
-
-	char *httpRequest =
+	string req =
 		"GET / HTTP/1.1\r\n"
 		"Host: stackoverflow.com\r\n"
 		"Connection: close\r\n"
 		"\r\n";
 
-	unsigned int length = strlen(httpRequest);
-
-	//check if we are ready to send data
-	if (!client.CheckWritability(5))
+	if (!client.CheckWritability(2))
+		return 0;
+	
+	if (client.Send(req.c_str(), req.size()) != req.size())
 		return 0;
 
-	//send the request
-	if (client.Send(httpRequest, length) != length)
+	Buffer<char> buffer;
+	if (!buffer.Alloc(BUFFER_SZ))
 		return 0;
 
-	char buffer[1024];
+	int total = 0;
 
-	//file "response.txt" will have the http response
-	File out;
-	if (!out.Open(L"response.txt", file::access::Write, file::share::ReadWrite, file::openmode::CreateAlways))
-		return 0;
-
-
-	//wait at most 5 seconds
-	while (client.CheckReadability(5))
+	//recieve data until there are no more data to recieve
+	//stop if:
+	//1) response delayed more than 2 seconds
+	//2) size of data recieved is greater than buffer size
+	//3) error occured
+	while (client.CheckReadability(2) && total < BUFFER_SZ)
 	{
-		int tmp = client.Recieve(buffer, 1024);
+		const int tmp = client.Recieve(buffer + total, BUFFER_SZ - total);
 		if (tmp <= 0)
 			break;
 
-		out.Write(buffer, tmp);
+		total += tmp;
 	}
+
+	if (total != 0)
+	{
+		File out("test.html", file::access::Write, file::share::ReadWrite, file::openmode::CreateAlways);
+		out.Write(buffer, total);
+	}
+
+	
 }
