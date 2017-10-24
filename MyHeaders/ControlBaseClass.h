@@ -8,7 +8,6 @@
 class ControlBaseClass
 {
 	protected:
-		HWND ParentHandle;
 		HWND ControlHandle;
 		unsigned int ControlID;
 	public:

@@ -3,8 +3,6 @@
 
 ControlBaseClass::ControlBaseClass()
 {
-	ParentHandle = 0;
-	ControlHandle = 0;
 	ControlID = 0;
 }
 
@@ -15,7 +13,7 @@ ControlBaseClass::ControlBaseClass(HWND parent, const unsigned int id)
 
 bool ControlBaseClass::Init(HWND parent, const unsigned int id)
 {
-	return (ControlHandle = GetDlgItem(ParentHandle = parent, ControlID = id)) != 0;
+	return (ControlHandle = GetDlgItem(parent, ControlID = id)) != 0;
 }
 
 bool ControlBaseClass::SetWLongPtr(int index, void *newValue)
@@ -60,7 +58,7 @@ HWND ControlBaseClass::Handle()
 
 HWND ControlBaseClass::Parent()
 {
-	return ParentHandle;
+	return GetParent(ControlHandle);
 }
 
 bool ControlBaseClass::Destroy()

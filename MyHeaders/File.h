@@ -96,33 +96,26 @@ class EnumFiles
 		HANDLE Handle;
 		WIN32_FIND_DATA Data;
 	public:
-		EnumFiles() :Handle(0) {}
+		EnumFiles() :Handle(INVALID_HANDLE_VALUE) {}
 		bool FindFirst(const TCHAR *path) 
 		{ 
 			Reset();
-			Handle = FindFirstFile(path, &Data);
-			if (Handle == INVALID_HANDLE_VALUE)
-			{
-				Handle = 0;
-				return false;
-			}
 
-			return true;
+			return (Handle = FindFirstFile(path, &Data)) != INVALID_HANDLE_VALUE;
 		}
 		bool FindNext() 
 		{
-			bool ret = FindNextFile(Handle, &Data) != 0;
-			return ret;
+			return FindNextFile(Handle, &Data) != 0;
 		}
 		bool Reset() 
 		{ 
-			if (!Handle)
+			if (Handle == INVALID_HANDLE_VALUE)
 				return true;
 
 			ZeroMemory((void*)&Data, sizeof(Data));
 			if (FindClose(Handle))
 			{
-				Handle = 0;
+				Handle = INVALID_HANDLE_VALUE;
 				return true;
 			}
 			return false;
