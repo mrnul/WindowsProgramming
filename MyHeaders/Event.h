@@ -1,6 +1,8 @@
 #pragma once
 
 #define MyHeaders_Event
+#include <Windows.h>
+#undef min //i can't use std::min
 
 
 class Event
@@ -22,17 +24,17 @@ class Event
 			return (Handle = CreateEvent(0, true, false, name)) != 0;
 		}
 
-		bool IsSignaled()
+		bool IsSignaled() const
 		{
 			return WaitForSingleObject(Handle, 0) != WAIT_TIMEOUT;
 		}
 
-		bool Set()
+		bool Signal() const
 		{
 			return SetEvent(Handle) != 0;
 		}
 
-		bool Reset()
+		bool Reset() const
 		{
 			return ResetEvent(Handle) != 0;
 		}
@@ -48,17 +50,17 @@ class Event
 			return true;
 		}
 
-		bool Wait(const unsigned int ms = INFINITE)
+		bool Wait(const unsigned int ms = INFINITE) const
 		{
 			return WaitForSingleObject(Handle, ms) != WAIT_TIMEOUT;
 		}
 
-		HANDLE GetHandle()
+		HANDLE GetHandle() const
 		{
 			return Handle;
 		}
 
-		operator bool()
+		operator bool() const
 		{
 			return IsSignaled();
 		}
